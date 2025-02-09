@@ -22,7 +22,7 @@ def market_view(request):
             return Response(serializer.errors)
 
 
-@api_view(['GET','DELETE'])
+@api_view(['GET', 'DELETE', 'PUT'])
 def market_single_view(request, id):
     if request.method == 'GET':
         market = Market.objects.get(pk=id)
@@ -34,3 +34,12 @@ def market_single_view(request, id):
         serializer = MarketSerializer(market)
         market.delete()
         return Response(f'Deleted: {serializer.data}')
+
+    if request.method == 'PUT':
+        market = Market.objects.get(pk=id)
+        serializer = MarketSerializer(market, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
