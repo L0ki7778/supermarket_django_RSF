@@ -14,9 +14,9 @@ class MarketSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         for field in ['name','location','description','net_worth']:
             setattr(instance,field,validated_data.get(field,getattr(instance,field)))
-        # instance.name = validated_data.get('name', instance.email)
-        # instance.location = validated_data.get('location', instance.content)
-        # instance.description = validated_data.get('description', instance.created)
-        # instance.net_worth = validated_data.get('net_worth', instance.created)
+        # instance.name = validated_data.get('name', instance.name)
+        # instance.location = validated_data.get('location', instance.location)
+        # instance.description = validated_data.get('description', instance.description)
+        # instance.net_worth = validated_data.get('net_worth', instance.net_worth)
         instance.save()
         return instance
