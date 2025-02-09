@@ -12,12 +12,25 @@ def market_view(request):
         markets = Market.objects.all()
         serializer = MarketSerializer(markets, many=True)
         return Response(serializer.data)
-    
-    
+
     elif request.method == 'POST':
-        serializer = MarketSerializer(data= request.data)
+        serializer = MarketSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+
+@api_view(['GET','DELETE'])
+def market_single_view(request, id):
+    if request.method == 'GET':
+        market = Market.objects.get(pk=id)
+        serializer = MarketSerializer(market)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        market = Market.objects.get(pk=id)
+        serializer = MarketSerializer(market)
+        market.delete()
+        return Response(f'Deleted: {serializer.data}')
