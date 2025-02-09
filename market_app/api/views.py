@@ -15,4 +15,9 @@ def market_view(request):
     
     
     elif request.method == 'POST':
-        pass
+        serializer = MarketSerializer(data= request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
