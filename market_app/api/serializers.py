@@ -20,3 +20,8 @@ class MarketSerializer(serializers.Serializer):
         # instance.net_worth = validated_data.get('net_worth', instance.net_worth)
         instance.save()
         return instance
+    
+    # def validate_description(self, value):
+    #     if 'X' in value:
+    #         raise serializers.ValidationError('no X in location')
+    #     return value
