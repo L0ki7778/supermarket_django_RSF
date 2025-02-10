@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from market_app.models import Market
+from market_app.models import Market,Seller
 
 
 def validate_no_X_letter(value):
@@ -39,6 +39,27 @@ class MarketSerializer(serializers.Serializer):
 
 
 class SellersDetailSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100)
     contact_info = serializers.CharField()
-    # markets = serializers.ManyToManyField(Market, related_name="sellers")
+    markets = MarketSerializer(many=True, read_only=True, default=[])
+
+
+class SellerCreateSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    contact_info = serializers.CharField()
+    markets = serializers.ListField(
+        child=serializers.IntegerField(), write_only=True)
+    
+    def validate_markets(self, market_instance):
+        markets = Market.objects.filter(id__in=market_instance)
+        if(markets) != len(market_instance):
+            raise serializers.ValidationError("missing markets")
+        return market_instance
+    
+    def create(self, validated_data):
+        market_ids = validated_data.pop('markets')
+        seller = Seller.objects.create(**validated_data)
+        markets = Market.objects.filter(id__in = market_ids)
+        seller.markets.set(markets)
+        return seller
