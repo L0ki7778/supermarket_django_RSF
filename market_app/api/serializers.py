@@ -36,3 +36,9 @@ class MarketSerializer(serializers.Serializer):
         # instance.net_worth = validated_data.get('net_worth', instance.net_worth)
         instance.save()
         return instance
+
+
+class SellersDetailSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    contact_info = serializers.CharField()
+    # markets = serializers.ManyToManyField(Market, related_name="sellers")

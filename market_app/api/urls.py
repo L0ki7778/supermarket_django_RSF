@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import market_view, market_single_view
+from .views import market_view, market_single_view,seller_view
 
 urlpatterns = [
-    path('', view=market_view),
-    path('<int:id>', view=market_single_view)
+    path('market/', view=market_view),
+    path('market/<int:id>', view=market_single_view),
+    path('seller/', view=seller_view),
 ]
