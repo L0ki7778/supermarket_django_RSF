@@ -43,6 +43,7 @@ class SellersDetailSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
     contact_info = serializers.CharField()
     markets = MarketSerializer(many=True, read_only=True, default=[])
+    # markets = serializers.StringRelatedField(many = True)
 
 
 class SellerCreateSerializer(serializers.Serializer):
@@ -51,11 +52,13 @@ class SellerCreateSerializer(serializers.Serializer):
     markets = serializers.ListField(
         child=serializers.IntegerField(), write_only=True)
     
-    def validate_markets(self, market_instance):
-        markets = Market.objects.filter(id__in=market_instance)
-        if(markets) != len(market_instance):
-            raise serializers.ValidationError("missing markets")
-        return market_instance
+    def validate_markets(self, market_pk):
+        markets = Market.objects.filter(id__in=market_pk)
+        #len(markets) differs if a pk is provided, which is not availabe within db
+        #example: no market_pk "3"--> len(market_pg) is __gt the list of markets 
+        if len(markets) != len(market_pk):
+            raise serializers.ValidationError(f"pk dismatch {market_pk} {len(markets)} {len(market_pk)}")
+        return market_pk
     
     def create(self, validated_data):
         market_ids = validated_data.pop('markets')

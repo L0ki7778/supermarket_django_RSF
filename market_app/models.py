@@ -10,7 +10,7 @@ class Market(models.Model):
     net_worth = models.DecimalField(max_digits=100, decimal_places=2)
 
     def __str__(self):
-        return f'The market {self.name}'
+        return f'The market {self.name} ist wo ich arbeite'
 
 
 class Seller(models.Model):
