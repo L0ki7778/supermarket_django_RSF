@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from market_app.models import Market,Seller
+from market_app.models import Market, Seller
 
 
 def validate_no_X_letter(value):
@@ -51,18 +51,27 @@ class SellerCreateSerializer(serializers.Serializer):
     contact_info = serializers.CharField()
     markets = serializers.ListField(
         child=serializers.IntegerField(), write_only=True)
-    
+
     def validate_markets(self, market_pk):
         markets = Market.objects.filter(id__in=market_pk)
-        #len(markets) differs if a pk is provided, which is not availabe within db
-        #example: no market_pk "3"--> len(market_pg) is __gt the list of markets 
+        # len(markets) differs if a pk is provided, which is not availabe within db
+        # example: no market_pk "3"--> len(market_pg) is __gt the list of markets
         if len(markets) != len(market_pk):
-            raise serializers.ValidationError(f"pk dismatch {market_pk} {len(markets)} {len(market_pk)}")
+            raise serializers.ValidationError(
+                f"pk dismatch {market_pk} {len(markets)} {len(market_pk)}")
         return market_pk
-    
+
     def create(self, validated_data):
         market_ids = validated_data.pop('markets')
         seller = Seller.objects.create(**validated_data)
-        markets = Market.objects.filter(id__in = market_ids)
+        markets = Market.objects.filter(id__in=market_ids)
         seller.markets.set(markets)
         return seller
+
+
+class ProductSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    description = serializers.CharField()
+    price = serializers.DecimalField(max_digits=6, decimal_places=2)
+    market = serializers.StringRelatedField(read_only=True)
+    seller = serializers.StringRelatedField(read_only=True)

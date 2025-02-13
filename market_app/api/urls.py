@@ -6,4 +6,5 @@ urlpatterns = [
     path('market/<int:id>', view=market_single_view),
     path('seller/', view=seller_view),
     path('products/', view=product_view),
+    path('products/<int:id>', view=product_view),
 ]

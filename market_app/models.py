@@ -32,4 +32,4 @@ class Product(models.Model):
         Seller, on_delete=models.CASCADE, related_name='Products')
 
     def __str__(self):
-        return f'{self.name} with the price of {self.price}'
+        return f'{self.name} with the price of {self.price} was sold in {self.market} by {self.seller}'
