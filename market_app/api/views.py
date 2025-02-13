@@ -62,14 +62,17 @@ def seller_view(request):
 
 
 @api_view(['GET', 'DELETE', 'PUT', 'POST'])
-def product_view(request, *args):
+def product_view(request, **kwargs):
     if request.method == "GET":
-        if (args == id):
-            product = Product.objects.get(id)
+        if 'id' in kwargs:
+            product = Product.objects.get(id=kwargs['id'])
             serializer = ProductSerializer(product)
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+            return Response(serializer.data)
+
+        else:
+            products = Product.objects.all()
+            serializer = ProductSerializer(products, many=True)
+            return Response(serializer.data)
 
     elif request.method == 'POST':
         serializer = ProductSerializer(data=request.data)
