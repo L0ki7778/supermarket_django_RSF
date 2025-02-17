@@ -19,7 +19,7 @@ class Seller(models.Model):
     markets = models.ManyToManyField(Market, related_name="sellers")
 
     def __str__(self):
-        return f'The Seller {self.name} bought in in {self.markets}'
+        return f'The Seller {self.name} sold in '
 
 
 class Product(models.Model):

@@ -15,17 +15,13 @@ def validate_no_X_letter(instance, value):
     return value
 
 
-class MarketSerializer(serializers.ModelSerializer):
+# class MarketSerializer(serializers.ModelSerializer):
     # id = serializers.IntegerField(read_only=True)
     # name = serializers.CharField(max_length=255)
     # location = serializers.CharField(
     #     max_length=255)
     # description = serializers.CharField()
     # net_worth = serializers.DecimalField(max_digits=100, decimal_places=2)
-
-    class Meta:
-        model = Market
-        fields = ["name", "location", "description"]
 
     # def create(self, validated_data):
     #     return Market.objects.create(**validated_data)
@@ -41,6 +37,27 @@ class MarketSerializer(serializers.ModelSerializer):
     #     instance.save()
     #     return instance
 
+
+class MarketSerializer(serializers.ModelSerializer):
+    sellers = serializers.StringRelatedField(many=True)
+    
+    class Meta:
+        model = Market
+        fields = ["name", "location", "description","sellers"]
+
+class SellerSerializer(serializers.ModelSerializer):
+    market_names = serializers.SerializerMethodField()
+    markets = MarketSerializer(many=True, read_only=True)
+    marked_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Market.objects.all(), many=True, source="markets")
+    
+
+    class Meta:
+        model=Seller
+        fields='__all__'      
+        
+    def get_market_names(self, instance):
+        return instance.markets.values_list('name',flat=True)
 
 class SellerSerializer(serializers.ModelSerializer):
     markets = MarketSerializer(many=True, read_only=True)
