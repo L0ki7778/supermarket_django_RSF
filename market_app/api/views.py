@@ -79,3 +79,12 @@ def product_view(request, **kwargs):
         if (serializer.is_valid()):
             serializer.save()
             return Response(serializer.data)
+        
+    elif request.method == 'PUT':
+        product = Product.objects.get(pk=id)
+        serializer = ProductSerializer(product,data=request.data, partial=True)
+        if (serializer.is_valid()):
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.error_messages)
