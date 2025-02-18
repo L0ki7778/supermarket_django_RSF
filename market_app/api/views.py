@@ -46,9 +46,9 @@ def market_single_view(request, id):
 
 
 @api_view()
-def seller_single_view(request, id):
+def seller_single_view(request, pk):
     if request.method == 'GET':
-        seller = Seller.objects.get(pk=id)
+        seller = Seller.objects.get(pk=pk)
         serializer = SellerSerializer(seller)
         return Response(serializer.data)
 
