@@ -39,34 +39,35 @@ def validate_no_X_letter(instance, value):
 
 
 class MarketSerializer(serializers.ModelSerializer):
-    sellers = serializers.StringRelatedField(many=True)
-    
+    sellers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='seller_single')
+
     class Meta:
         model = Market
-        fields = ["name", "location", "description","sellers"]
+        fields = ["name", "location", "description", "sellers","id"]
+
 
 class SellerSerializer(serializers.ModelSerializer):
     market_names = serializers.SerializerMethodField()
     markets = MarketSerializer(many=True, read_only=True)
-    marked_ids = serializers.PrimaryKeyRelatedField(
+    market_ids = serializers.PrimaryKeyRelatedField(
         queryset=Market.objects.all(), many=True, source="markets")
-    
 
     class Meta:
-        model=Seller
-        fields='__all__'      
-        
+        model = Seller
+        fields = '__all__'
+
     def get_market_names(self, instance):
-        return instance.markets.values_list('name',flat=True)
+        return instance.markets.values_list('name', flat=True)
+
 
 class SellerSerializer(serializers.ModelSerializer):
     markets = MarketSerializer(many=True, read_only=True)
-    marked_ids = serializers.PrimaryKeyRelatedField(
+    market_ids = serializers.PrimaryKeyRelatedField(
         queryset=Market.objects.all(), many=True, source="markets")
 
     class Meta:
-        model=Seller
-        fields='__all__'        
+        model = Seller
+        fields = '__all__'
 
 
 # class SellersDetailSerializer(serializers.Serializer):
