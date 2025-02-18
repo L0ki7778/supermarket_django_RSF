@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import MarketSerializer, ProductSerializer, SellerSerializer
+from .serializers import MarketSerializer, ProductSerializer, SellerSerializer,MarketHyperlinkedSerializer
 from market_app.models import Market, Seller, Product
 # from rest_framework.renderers import TemplateHTMLRenderer
 
@@ -26,7 +26,7 @@ def market_view(request):
 def market_single_view(request, id):
     if request.method == 'GET':
         market = Market.objects.get(pk=id)
-        serializer = MarketSerializer(market)
+        serializer = MarketHyperlinkedSerializer(market,context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'DELETE':

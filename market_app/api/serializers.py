@@ -39,11 +39,16 @@ def validate_no_X_letter(instance, value):
 
 
 class MarketSerializer(serializers.ModelSerializer):
-    sellers = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='seller_single')
+    sellers = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Market
-        fields = ["name", "location", "description", "sellers","id"]
+        fields = "__all__"
+    
+class MarketHyperlinkedSerializer(MarketSerializer,serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Market
+        exclude = ['sellers']
 
 
 class SellerSerializer(serializers.ModelSerializer):
