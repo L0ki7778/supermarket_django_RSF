@@ -39,16 +39,24 @@ def validate_no_X_letter(instance, value):
 
 
 class MarketSerializer(serializers.ModelSerializer):
+    
     sellers = serializers.StringRelatedField(many=True, read_only=True)
-
     class Meta:
         model = Market
-        fields = "__all__"
+        fields = '__all__'
+        
+        
     
 class MarketHyperlinkedSerializer(MarketSerializer,serializers.HyperlinkedModelSerializer):
+    # sellers = serializers.StringRelatedField(many=True, read_only=True)
     class Meta:
         model = Market
-        exclude = ['sellers']
+        fields=['url']
+        extra_kwargs = {
+            'url':{
+                'lookup_field':'id',
+            }
+        }
 
 
 class SellerSerializer(serializers.ModelSerializer):
@@ -68,7 +76,7 @@ class SellerSerializer(serializers.ModelSerializer):
 class SellerSerializer(serializers.ModelSerializer):
     markets = MarketSerializer(many=True, read_only=True)
     market_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Market.objects.all(), many=True, source="markets")
+        queryset=Market.objects.all(), many=True, write_only=True, source="markets")
 
     class Meta:
         model = Seller

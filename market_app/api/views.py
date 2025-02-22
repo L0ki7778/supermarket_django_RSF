@@ -10,7 +10,7 @@ from market_app.models import Market, Seller, Product
 def market_view(request):
     if request.method == 'GET':
         markets = Market.objects.all()
-        serializer = MarketSerializer(markets, many=True,context={'request': request})
+        serializer = MarketHyperlinkedSerializer(markets, many=True,context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'POST':
@@ -26,7 +26,7 @@ def market_view(request):
 def market_single_view(request, id):
     if request.method == 'GET':
         market = Market.objects.get(pk=id)
-        serializer = MarketHyperlinkedSerializer(market,context={'request': request})
+        serializer = MarketSerializer(market,context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'DELETE':
