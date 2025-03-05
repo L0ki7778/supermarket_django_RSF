@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import MarketSerializer, ProductSerializer, SellerSerializer
-from market_app.models import Market, Seller, Product
+from .serializers import MarketSerializer, SellerSerializer
+from market_app.models import Market, Seller
 # from rest_framework.renderers import TemplateHTMLRenderer
 
 
@@ -67,33 +67,3 @@ def seller_view(request):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
-
-
-@api_view(['GET', 'DELETE', 'PUT', 'POST'])
-def product_view(request, **kwargs):
-    if request.method == "GET":
-        if 'id' in kwargs:
-            product = Product.objects.get(id=kwargs['id'])
-            serializer = ProductSerializer(product)
-            return Response(serializer.data)
-
-        else:
-            products = Product.objects.all()
-            serializer = ProductSerializer(products, many=True)
-            return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = ProductSerializer(data=request.data)
-        if (serializer.is_valid()):
-            serializer.save()
-            return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        product = Product.objects.get(id=kwargs['id'])
-        serializer = ProductSerializer(
-            product, data=request.data, partial=True)
-        if (serializer.is_valid()):
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.error_messages)

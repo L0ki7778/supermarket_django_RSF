@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from market_app.models import Market, Seller, Product
+from market_app.models import Market, Seller
 
 
 def validate_no_X_letter(instance, value):

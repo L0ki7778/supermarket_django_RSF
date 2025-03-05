@@ -20,16 +20,3 @@ class Seller(models.Model):
 
     def __str__(self):
         return f'The Seller {self.name} sold in '
-
-
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=6, decimal_places=2)
-    market = models.ForeignKey(
-        Market, on_delete=models.CASCADE, related_name='Products')
-    seller = models.ForeignKey(
-        Seller, on_delete=models.CASCADE, related_name='Products')
-
-    def __str__(self):
-        return f'{self.name} with the price of {self.price} was sold in {self.market} by {self.seller}'
