@@ -37,24 +37,39 @@ def validate_no_X_letter(instance, value):
     #     instance.save()
     #     return instance
 
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 
-class MarketSerializer(serializers.ModelSerializer):
-    
-    sellers = serializers.StringRelatedField(many=True, read_only=True)
-    class Meta:
-        model = Market
-        fields = '__all__'
-        
-        
-    
-class MarketHyperlinkedSerializer(MarketSerializer,serializers.HyperlinkedModelSerializer):
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop('fields', None)
+        super().__init__(*args, **kwargs)
+
+        if fields is not None:
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+
+class MarketSerializer(DynamicFieldsModelSerializer):
     # sellers = serializers.StringRelatedField(many=True, read_only=True)
     class Meta:
         model = Market
-        fields=['url']
+        # fields = ['name']
+        fields = ['id',
+                  'name',
+                  'location',
+                  'description',
+                  'net_worth']
+
+
+class MarketHyperlinkedSerializer(MarketSerializer, serializers.HyperlinkedModelSerializer):
+    # sellers = serializers.StringRelatedField(many=True, read_only=True)
+    class Meta:
+        model = Market
+        fields = ['url']
         extra_kwargs = {
-            'url':{
-                'lookup_field':'id',
+            'url': {
+                'lookup_field': 'id',
             }
         }
 
@@ -67,20 +82,20 @@ class SellerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seller
-        fields = '__all__'
+        fields = ['market_names', 'markets', 'market_ids']
 
     def get_market_names(self, instance):
         return instance.markets.values_list('name', flat=True)
 
 
-class SellerSerializer(serializers.ModelSerializer):
-    markets = MarketSerializer(many=True, read_only=True)
-    market_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Market.objects.all(), many=True, write_only=True, source="markets")
+# class SellerSerializer(serializers.ModelSerializer):
+#     markets = MarketSerializer(many=True, read_only=True)
+#     market_ids = serializers.PrimaryKeyRelatedField(
+#         queryset=Market.objects.all(), many=True, write_only=True, source="markets")
 
-    class Meta:
-        model = Seller
-        fields = '__all__'
+#     class Meta:
+#         model = Seller
+#         fields = '__all__'
 
 
 # class SellersDetailSerializer(serializers.Serializer):
