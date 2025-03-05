@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import MarketSerializer, SellerSerializer
-from market_app.models import Market, Seller
+from .serializers import MarketSerializer, SellerSerializer, ProductSerializer
+from market_app.models import Market, Seller, Product
 # from rest_framework.renderers import TemplateHTMLRenderer
 
 
@@ -10,7 +10,8 @@ from market_app.models import Market, Seller
 def market_view(request):
     if request.method == 'GET':
         markets = Market.objects.all()
-        serializer = MarketSerializer(markets, many=True,context={'request': request}, fields = {'id','name'})
+        serializer = MarketSerializer(markets, many=True, context={
+                                      'request': request}, fields={'id', 'name'})
         return Response(serializer.data)
 
     elif request.method == 'POST':
@@ -26,7 +27,7 @@ def market_view(request):
 def market_single_view(request, id):
     if request.method == 'GET':
         market = Market.objects.get(pk=id)
-        serializer = MarketSerializer(market,context={'request': request})
+        serializer = MarketSerializer(market, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'DELETE':
@@ -67,3 +68,16 @@ def seller_view(request):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+
+@api_view(['GET', 'POST', 'PUT', 'PATCH'])
+def product_view(request):
+    if request.method == 'GET':
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = ProductSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)

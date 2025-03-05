@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from market_app.models import Market, Seller
+from market_app.models import Market, Seller,Product
 
 
 def validate_no_X_letter(instance, value):
@@ -128,22 +128,7 @@ class SellerSerializer(serializers.ModelSerializer):
     #     seller.markets.set(markets)
     #     return seller
 
-
-class ProductSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(max_length=100)
-    description = serializers.CharField()
-    price = serializers.DecimalField(max_digits=6, decimal_places=2)
-    market = serializers.PrimaryKeyRelatedField(queryset=Market.objects.all())
-    seller = serializers.PrimaryKeyRelatedField(queryset=Seller.objects.all())
-
-    def create(self, validated_data):
-        product = Product.objects.create(**validated_data)
-        return product
-
-    def update(self, instance, validated_data):
-        for field in ["name", "description", "price", "market", "seller"]:
-            setattr(instance, field, validated_data.get(
-                field, getattr(instance, field)))
-        instance.save()
-        return instance
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Product
+        fields= '__all__'
