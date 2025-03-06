@@ -130,7 +130,7 @@ class SellerSerializer(serializers.ModelSerializer):
     #     return seller
 
 class ProductSerializer(serializers.ModelSerializer):
-    market = serializers.StringRelatedField()
+    market_display = serializers.StringRelatedField(source='market', read_only=True)
     class Meta:
         model= Product
-        fields= '__all__'
+        exclude = ['market']
