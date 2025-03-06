@@ -82,13 +82,20 @@ class RetrieveSellerView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     def get(self,request,*args, **kwargs ):
         return self.retrieve(request,*args, **kwargs)
 
-class SellersOfMarketListView(generics.ListAPIView):
+class SellersOfMarketListView(generics.ListCreateAPIView):
     serializer_class = SellerSerializer
 
     def get_queryset(self):
         id = self.kwargs.get('id')
         market = Market.objects.get(pk = id)
         return market.sellers.all()
+
+# //////////////////////////////////////////////////////////////    perform_create is useful when applying additional logic before saving
+# //  def perform_create(self, serializer):                 ////    usecase here:   only useful if a single relation to a specific
+# //        marked_id = self.kwargs.get('id')               ////                    market needs to be enforced, as it gets the id out of the
+# //        market = Market.objects.get(pk = marked_id)     ////                    market-url
+# //        serializer.save(markets = [market])             ////
+# //////////////////////////////////////////////////////////////
 
 # @api_view()
 # def seller_single_view(request, pk):
