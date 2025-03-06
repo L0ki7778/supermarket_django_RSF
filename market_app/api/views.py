@@ -138,22 +138,27 @@ def product_view(request):
             return Response(serializer.data)
 
 
-class ProductViewSet(viewsets.ViewSet):
+class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
-    def list(self, request):
-        serializer = ProductSerializer(self.queryset, many=True)
-        return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):
-        product = get_object_or_404(self.queryset, pk=pk)
-        serializer = ProductSerializer(product)
-        return Response(serializer.data)
+# class ProductViewSet(viewsets.ViewSet):
+#     queryset = Product.objects.all()
 
-    def create(self,request):
-        product = ProductSerializer(data=request.data)
-        if product.is_valid():
-            product.save()
-            return Response(product.data)
-        else:
-            return Response(product.errors)
+#     def list(self, request):
+#         serializer = ProductSerializer(self.queryset, many=True)
+#         return Response(serializer.data)
+
+#     def retrieve(self, request, pk=None):
+#         product = get_object_or_404(self.queryset, pk=pk)
+#         serializer = ProductSerializer(product)
+#         return Response(serializer.data)
+
+#     def create(self,request):
+#         product = ProductSerializer(data=request.data)
+#         if product.is_valid():
+#             product.save()
+#             return Response(product.data)
+#         else:
+#             return Response(product.errors)
