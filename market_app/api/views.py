@@ -3,55 +3,91 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import MarketSerializer, SellerSerializer, ProductSerializer
 from market_app.models import Market, Seller, Product
+from rest_framework import mixins
+from rest_framework import generics
 # from rest_framework.renderers import TemplateHTMLRenderer
 
 
-@api_view(['GET', 'POST'])
-def market_view(request):
-    if request.method == 'GET':
-        markets = Market.objects.all()
-        serializer = MarketSerializer(markets, many=True, context={
-                                      'request': request}, fields={'id', 'name'})
-        return Response(serializer.data)
+class MarketView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Market.objects.all()
+    serializer_class = MarketSerializer
 
-    elif request.method == 'POST':
-        serializer = MarketSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
-@api_view(['GET', 'DELETE', 'PUT'])
-def market_single_view(request, id):
-    if request.method == 'GET':
-        market = Market.objects.get(pk=id)
-        serializer = MarketSerializer(market, context={'request': request})
-        return Response(serializer.data)
+# @api_view(['GET', 'POST'])
+# def market_view(request):
+#     if request.method == 'GET':
+#         markets = Market.objects.all()
+#         serializer = MarketSerializer(markets, many=True, context={
+#                                       'request': request}, fields={'id', 'name'})
+#         return Response(serializer.data)
 
-    elif request.method == 'DELETE':
-        market = Market.objects.get(pk=id)
-        serializer = MarketSerializer(market)
-        market.delete()
-        return Response(f'Deleted: {serializer.data}')
-
-    if request.method == 'PUT':
-        market = Market.objects.get(pk=id)
-        serializer = MarketSerializer(market, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+#     elif request.method == 'POST':
+#         serializer = MarketSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
 
 
-@api_view()
-def seller_single_view(request, pk):
-    if request.method == 'GET':
-        seller = Seller.objects.get(pk=pk)
-        serializer = SellerSerializer(seller)
-        return Response(serializer.data)
+class MarketDetailView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    queryset = Market.objects.all()
+    serializer_class = MarketSerializer
+    lookup_field = 'id'
+
+    def get(self,request,*args, **kwargs):
+        return self.retrieve(request,*args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+# @api_view(['GET', 'DELETE', 'PUT'])
+# def market_single_view(request, id):
+#     if request.method == 'GET':
+#         market = Market.objects.get(pk=id)
+#         serializer = MarketSerializer(market, context={'request': request})
+#         return Response(serializer.data)
+
+#     elif request.method == 'DELETE':
+#         market = Market.objects.get(pk=id)
+#         serializer = MarketSerializer(market)
+#         market.delete()
+#         return Response(f'Deleted: {serializer.data}')
+
+#     if request.method == 'PUT':
+#         market = Market.objects.get(pk=id)
+#         serializer = MarketSerializer(market, data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
+
+
+class RetrieveSellerView(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+
+    def get(self,request,*args, **kwargs ):
+        return self.retrieve(request,*args, **kwargs)
+
+# @api_view()
+# def seller_single_view(request, pk):
+#     if request.method == 'GET':
+#         seller = Seller.objects.get(pk=pk)
+#         serializer = SellerSerializer(seller)
+#         return Response(serializer.data)
 
 
 @api_view(['GET', 'POST'])
@@ -77,7 +113,7 @@ def product_view(request):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
-        serializer = ProductSerializer(data = request.data)
+        serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

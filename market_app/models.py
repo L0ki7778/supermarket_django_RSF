@@ -29,3 +29,6 @@ class Product(models.Model):
         Seller, on_delete=models.CASCADE, related_name="Product")
     market = models.ForeignKey(
         Market, on_delete=models.CASCADE, related_name="Product")
+
+    def __str__(self):
+        return f'{self.name} '
