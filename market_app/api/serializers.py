@@ -51,7 +51,7 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 
 
 class MarketSerializer(DynamicFieldsModelSerializer):
-    # sellers = serializers.StringRelatedField(many=True, read_only=True)
+    sellers = serializers.StringRelatedField(many=True, read_only=True)
     class Meta:
         model = Market
         # fields = ['name']
@@ -59,7 +59,8 @@ class MarketSerializer(DynamicFieldsModelSerializer):
                   'name',
                   'location',
                   'description',
-                  'net_worth']
+                  'net_worth',
+                  'sellers']
 
 
 class MarketHyperlinkedSerializer(MarketSerializer, serializers.HyperlinkedModelSerializer):
@@ -75,14 +76,14 @@ class MarketHyperlinkedSerializer(MarketSerializer, serializers.HyperlinkedModel
 
 
 class SellerSerializer(serializers.ModelSerializer):
-    market_names = serializers.SerializerMethodField()
-    markets = MarketSerializer(many=True, read_only=True)
-    market_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Market.objects.all(), many=True, source="markets")
+    # market_names = serializers.SerializerMethodField()
+    # markets = MarketSerializer(many=True, read_only=True)
+    # market_ids = serializers.PrimaryKeyRelatedField(
+    #     queryset=Market.objects.all(), many=True, source="markets")
 
     class Meta:
         model = Seller
-        fields = ['market_names', 'markets', 'market_ids']
+        fields = '__all__'
 
     def get_market_names(self, instance):
         return instance.markets.values_list('name', flat=True)

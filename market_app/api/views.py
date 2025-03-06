@@ -82,6 +82,14 @@ class RetrieveSellerView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     def get(self,request,*args, **kwargs ):
         return self.retrieve(request,*args, **kwargs)
 
+class SellersOfMarketListView(generics.ListAPIView):
+    serializer_class = SellerSerializer
+
+    def get_queryset(self):
+        id = self.kwargs.get('id')
+        market = Market.objects.get(pk = id)
+        return market.sellers.all()
+
 # @api_view()
 # def seller_single_view(request, pk):
 #     if request.method == 'GET':
