@@ -90,11 +90,15 @@ class SellersOfMarketListView(generics.ListCreateAPIView):
         market = Market.objects.get(pk = id)
         return market.sellers.all()
 
-# //////////////////////////////////////////////////////////////    perform_create is useful when applying additional logic before saving
+# //////////////////////////////////////////////////////////////    perform_create: is useful when applying additional logic before saving,
+# //                                                        ////                    like getting the market-pk out of the url as reference for
+# //                                                        ////                    the seller-creation
 # //  def perform_create(self, serializer):                 ////    usecase here:   only useful if a single relation to a specific
 # //        marked_id = self.kwargs.get('id')               ////                    market needs to be enforced, as it gets the id out of the
 # //        market = Market.objects.get(pk = marked_id)     ////                    market-url
 # //        serializer.save(markets = [market])             ////
+# //                                                        ////
+# //                                                        ////
 # //////////////////////////////////////////////////////////////
 
 # @api_view()
