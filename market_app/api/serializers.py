@@ -130,6 +130,7 @@ class SellerSerializer(serializers.ModelSerializer):
     #     return seller
 
 class ProductSerializer(serializers.ModelSerializer):
+    market = serializers.StringRelatedField()
     class Meta:
         model= Product
         fields= '__all__'

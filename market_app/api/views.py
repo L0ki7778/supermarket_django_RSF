@@ -1,10 +1,9 @@
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, mixins, generics, viewsets
 from .serializers import MarketSerializer, SellerSerializer, ProductSerializer
 from market_app.models import Market, Seller, Product
-from rest_framework import mixins
-from rest_framework import generics
+from django.shortcuts import get_object_or_404
 # from rest_framework.renderers import TemplateHTMLRenderer
 
 
@@ -40,8 +39,8 @@ class MarketDetailView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixin
     serializer_class = MarketSerializer
     lookup_field = 'id'
 
-    def get(self,request,*args, **kwargs):
-        return self.retrieve(request,*args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -79,15 +78,16 @@ class RetrieveSellerView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer
 
-    def get(self,request,*args, **kwargs ):
-        return self.retrieve(request,*args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
 
 class SellersOfMarketListView(generics.ListCreateAPIView):
     serializer_class = SellerSerializer
 
     def get_queryset(self):
         id = self.kwargs.get('id')
-        market = Market.objects.get(pk = id)
+        market = Market.objects.get(pk=id)
         return market.sellers.all()
 
 # //////////////////////////////////////////////////////////////    perform_create: is useful when applying additional logic before saving,
@@ -136,3 +136,24 @@ def product_view(request):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
+
+
+class ProductViewSet(viewsets.ViewSet):
+    queryset = Product.objects.all()
+
+    def list(self, request):
+        serializer = ProductSerializer(self.queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        product = get_object_or_404(self.queryset, pk=pk)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+
+    def create(self,request):
+        product = ProductSerializer(data=request.data)
+        if product.is_valid():
+            product.save()
+            return Response(product.data)
+        else:
+            return Response(product.errors)
